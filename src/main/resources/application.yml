@@ -1,0 +1,25 @@
+spring:
+  profiles:
+    active: stdout-log
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/course
+    username: postgres
+    password: 123456
+
+flyway:
+  url: jdbc:postgresql://localhost:5433/course
+  user: postgres
+  password: 123456
+  enabled: true
+  locations:
+    - 'classpath:db/migration'
+
+logging:
+  level:
+    ru: TRACE
+    org:
+      springframework:
+        web: DEBUG
+      apache:
+        http: DEBUG
