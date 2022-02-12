@@ -1,8 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Task;
-import com.example.demo.repository.TaskRepository;
-import java.util.Optional;
+import com.example.demo.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,47 +18,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @PostMapping()
     public ResponseEntity<Task> create(@RequestBody Task task) {
-        return ResponseEntity.ok(taskRepository.save(task));
+        return ResponseEntity.ok(taskService.create(task));
     }
 
     @GetMapping()
     public ResponseEntity<Iterable<Task>> getTasks() {
-        return ResponseEntity.ok(taskRepository.findAll());
+        return ResponseEntity.ok(taskService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Task>> getTask(@PathVariable Long id) {
-        return ResponseEntity.ok(taskRepository.findById(id));
+    public ResponseEntity<Task> getTask(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.getOne(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        task.setId(id);
-        return ResponseEntity.ok(taskRepository.save(task));
+        return ResponseEntity.ok(taskService.update(id, task));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskRepository.deleteById(id);
+        taskService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
-    public void patchMethod(@PathVariable Long id, @RequestBody Task task) {
-        if (task.isDone())
-            taskRepository.markAsDone(id);
-    }
-
     @PatchMapping("/{id}:mark-as-done")
-    public void patchMethod(@PathVariable Long id) {
-        taskRepository.markAsDone(id);
+    public void patchMethod(@PathVariable Long id, @RequestBody Task task) {
+        taskService.complete(id, task);
     }
 }
